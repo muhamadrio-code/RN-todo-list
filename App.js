@@ -1,12 +1,43 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from "react";
+import { StyleSheet, View, FlatList, Alert } from "react-native";
+import Header from "./components/header";
+import TodoItem from "./components/todoItem";
+import AddToDo from "./components/addToDo";
 
 export default function App() {
+  const [todo, setTodo] = useState([
+    { text: "Buy Coffe", key: "1" },
+    { text: "Create an app", key: "2" },
+    { text: "Play on the switch", key: "3" },
+  ]);
+
+  const submitHandle = (text) => {
+    if (text.length > 4) {
+      setTodo((prevTodo) => [
+        { text: text, key: Math.random().toString() },
+        ...prevTodo,
+      ]);
+    } else {
+      Alert.alert("OOPS!", "Todos must be over 4 chars long", [
+        { text: "Understood", onPress: () => console.log("alert closed") },
+      ]);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <Header />
+      <View style={styles.content}>
+        <AddToDo submitHandle={submitHandle} />
+        <View style={styles.list}>
+          <FlatList
+            data={todo}
+            renderItem={({ item }) => (
+              <TodoItem item={item} setTodo={setTodo} />
+            )}
+          />
+        </View>
+      </View>
     </View>
   );
 }
@@ -14,8 +45,12 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+  },
+  content: {
+    padding: 40,
+  },
+  list: {
+    marginTop: 30,
   },
 });
